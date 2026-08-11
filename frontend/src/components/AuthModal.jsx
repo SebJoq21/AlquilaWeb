@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { X } from 'lucide-react'
 
 const registerFields = [
@@ -89,9 +89,15 @@ function AuthModal({ mode, onClose, onToggle, onSubmit }) {
   const isLogin = mode === 'login'
   const fields = isLogin ? loginFields : registerFields
   const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const navigate = useNavigate()
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (isLogin) {
+      onClose()
+      navigate('/dashboard')
+      return
+    }
     if (onSubmit) onSubmit()
   }
 

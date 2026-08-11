@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Check, Layers } from 'lucide-react'
 import DropZone from '../components/DropZone'
 
@@ -108,8 +108,15 @@ function StepPayment() {
 
 function Onboarding() {
   const [step, setStep] = useState(1)
+  const navigate = useNavigate()
 
-  const handleNext = () => setStep((prev) => Math.min(prev + 1, steps.length))
+  const handleNext = () => {
+    if (step === steps.length) {
+      navigate('/dashboard')
+      return
+    }
+    setStep((prev) => Math.min(prev + 1, steps.length))
+  }
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1))
 
   return (
