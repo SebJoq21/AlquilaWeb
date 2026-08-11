@@ -19,16 +19,16 @@ function Navbar({ onLogin, onRegister }) {
             Inicio
           </a>
           <a
-            href="#como-funciona"
-            className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
-          >
-            Cómo funciona
-          </a>
-          <a
             href="#demos"
             className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
           >
             Demos
+          </a>
+          <a
+            href="#como-funciona"
+            className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+          >
+            Cómo funciona
           </a>
           <a
             href="#planes"

@@ -83,9 +83,14 @@ function Field({ field }) {
   )
 }
 
-function AuthModal({ mode, onClose, onToggle }) {
+function AuthModal({ mode, onClose, onToggle, onSubmit }) {
   const isLogin = mode === 'login'
   const fields = isLogin ? loginFields : registerFields
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (onSubmit) onSubmit()
+  }
 
   return (
     <div
@@ -110,7 +115,7 @@ function AuthModal({ mode, onClose, onToggle }) {
           {isLogin ? 'Bienvenido de nuevo' : 'Registro de tu restaurante'}
         </h2>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div
             className={
               isLogin
