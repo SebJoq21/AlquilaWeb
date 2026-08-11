@@ -1,6 +1,6 @@
 import { Layers } from 'lucide-react'
 
-function Navbar() {
+function Navbar({ onLogin, onRegister }) {
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
@@ -38,18 +38,20 @@ function Navbar() {
           </a>
         </div>
         <div className="flex items-center">
-          <a
-            href="#"
-            className="text-sm font-medium text-slate-600 hover:text-indigo-600 mr-6 transition-colors"
+          <button
+            type="button"
+            onClick={onLogin}
+            className="text-sm font-medium text-slate-600 hover:text-indigo-600 mr-6 transition-colors cursor-pointer"
           >
             Iniciar Sesión
-          </a>
-          <a
-            href="#planes"
-            className="bg-indigo-600 text-white text-sm px-5 py-2.5 rounded-full font-medium shadow-md hover:bg-indigo-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+          </button>
+          <button
+            type="button"
+            onClick={onRegister}
+            className="bg-indigo-600 text-white text-sm px-5 py-2.5 rounded-full font-medium shadow-md hover:bg-indigo-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
           >
-            Empezar ahora
-          </a>
+            Regístrate
+          </button>
         </div>
       </nav>
     </header>

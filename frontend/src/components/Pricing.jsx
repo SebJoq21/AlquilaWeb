@@ -1,6 +1,6 @@
 import { CheckCircle2 } from 'lucide-react'
 
-function Pricing() {
+function Pricing({ onRegister }) {
   return (
     <section id="planes" className="bg-slate-50 py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,12 +29,13 @@ function Pricing() {
               </li>
             </ul>
             <div className="mt-auto">
-              <a
-                href="#"
-                className="block text-center w-full bg-white text-indigo-600 border border-indigo-600 rounded-full px-6 py-3 font-medium hover:bg-indigo-50 transition-all"
+              <button
+                type="button"
+                onClick={onRegister}
+                className="block text-center w-full bg-white text-indigo-600 border border-indigo-600 rounded-full px-6 py-3 font-medium hover:bg-indigo-50 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 Elegir Básico
-              </a>
+              </button>
             </div>
           </div>
 
@@ -71,12 +72,13 @@ function Pricing() {
               </li>
             </ul>
             <div className="mt-auto">
-              <a
-                href="#"
-                className="block text-center w-full bg-indigo-600 text-white rounded-full px-6 py-3 font-medium shadow-sm hover:bg-indigo-700 transition-all"
+              <button
+                type="button"
+                onClick={onRegister}
+                className="block text-center w-full bg-indigo-600 text-white rounded-full px-6 py-3 font-medium shadow-sm hover:bg-indigo-700 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 Elegir Profesional
-              </a>
+              </button>
             </div>
           </div>
 
@@ -98,12 +100,13 @@ function Pricing() {
               </li>
             </ul>
             <div className="mt-auto">
-              <a
-                href="#"
-                className="block text-center w-full bg-white text-indigo-600 border border-indigo-600 rounded-full px-6 py-3 font-medium hover:bg-indigo-50 transition-all"
+              <button
+                type="button"
+                onClick={onRegister}
+                className="block text-center w-full bg-white text-indigo-600 border border-indigo-600 rounded-full px-6 py-3 font-medium hover:bg-indigo-50 hover:scale-105 transition-all duration-200 cursor-pointer"
               >
                 Personalizar
-              </a>
+              </button>
             </div>
           </div>
         </div>
