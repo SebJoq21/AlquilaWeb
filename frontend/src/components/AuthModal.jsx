@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { X } from 'lucide-react'
 
 const registerFields = [
@@ -86,6 +88,7 @@ function Field({ field }) {
 function AuthModal({ mode, onClose, onToggle, onSubmit }) {
   const isLogin = mode === 'login'
   const fields = isLogin ? loginFields : registerFields
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -127,15 +130,50 @@ function AuthModal({ mode, onClose, onToggle, onSubmit }) {
               <Field key={field.id} field={field} />
             ))}
           </div>
+          {!isLogin && (
+            <div className="col-span-1 sm:col-span-2 flex items-start mb-6">
+              <div className="flex items-center h-5">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="w-4 h-4 text-indigo-600 bg-slate-50 border-slate-300 rounded focus:ring-indigo-600 cursor-pointer"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label
+                  htmlFor="terms"
+                  className="font-medium text-slate-700 cursor-pointer"
+                >
+                  He leído y acepto los{' '}
+                  <Link
+                    to="/terminos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:underline"
+                  >
+                    Términos y Condiciones
+                  </Link>{' '}
+                  y la Política de Privacidad.
+                </label>
+              </div>
+            </div>
+          )}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-700 transition-colors mb-4"
+            disabled={!isLogin && !acceptedTerms}
+            className={`w-full font-medium py-2.5 rounded-lg transition-colors ${
+              acceptedTerms || isLogin
+                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+            }`}
           >
             {isLogin ? 'Entrar' : 'Crear cuenta'}
           </button>
         </form>
 
-        <p className="text-sm text-slate-500 text-center">
+        <p className="text-sm text-slate-600 text-center mt-6">
           {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}{' '}
           <span
             onClick={() => onToggle(isLogin ? 'register' : 'login')}
