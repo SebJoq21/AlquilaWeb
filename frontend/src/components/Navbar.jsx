@@ -2,8 +2,8 @@ import { Layers } from 'lucide-react'
 
 function Navbar({ onLogin, onRegister }) {
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 transition-all duration-300">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
         <a
           href="#"
           className="flex items-center gap-2 text-2xl font-black tracking-tighter text-slate-900"
@@ -53,8 +53,8 @@ function Navbar({ onLogin, onRegister }) {
             Regístrate
           </button>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
   )
 }
 

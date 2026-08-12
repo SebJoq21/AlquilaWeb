@@ -4,10 +4,29 @@
   --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Reset estricto para Full-Bleed */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden; /* Evita el scroll horizontal */
+}
+
 html {
   scroll-behavior: smooth;
 }
 
+/* Animaciones personalizadas */
 @keyframes fadeIn {
   from {
     opacity: 0;
