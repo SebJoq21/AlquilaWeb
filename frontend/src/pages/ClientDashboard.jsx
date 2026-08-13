@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ModulesView from '../components/ModulesView'
 import {
   CreditCard,
   Layers,
@@ -68,18 +69,13 @@ function SupportBadge({ status }) {
 
 function PlanModal({
   onClose,
+  onContinue,
   currentPlan,
   selectedPlan,
   setSelectedPlan,
-  showSecurityModal,
-  setShowSecurityModal,
-  authStep,
-  setAuthStep,
-  onConfirmPlanChange,
 }) {
   return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out]">
         {/* Header del Modal */}
         <div className="flex justify-between items-center p-6 border-b border-slate-100">
@@ -204,7 +200,7 @@ function PlanModal({
           <button
             type="button"
             disabled={selectedPlan === currentPlan}
-            onClick={() => setShowSecurityModal(true)}
+            onClick={onContinue}
             className={`px-6 py-2.5 rounded-lg font-medium transition-all w-full sm:w-auto ${
               selectedPlan === currentPlan
                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
@@ -216,95 +212,102 @@ function PlanModal({
         </div>
       </div>
     </div>
-
-    {showSecurityModal && (
-      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-        <div className="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out]">
-
-          {/* Cabecera */}
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-              Verificación de Seguridad
-            </h3>
-            <button onClick={() => { setShowSecurityModal(false); setAuthStep(1) }} className="text-slate-400 hover:text-slate-600 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-          </div>
-
-          {/* Cuerpo (Formulario) */}
-          <div className="p-6">
-            <div className="bg-indigo-50 border border-indigo-100 text-indigo-800 text-sm p-4 rounded-xl mb-6">
-              Estás a punto de cambiar al <strong>Plan {selectedPlan === 'basico' ? 'Básico' : 'Profesional'}</strong>. Para autorizar este cambio en la facturación, necesitamos validar tu identidad.
-            </div>
-
-            <div className="space-y-4">
-              {authStep === 1 ? (
-                /* PASO 1: Solo Contraseña */
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Contraseña de administrador</label>
-                  <input
-                    type="password"
-                    placeholder="Ingresa tu contraseña para continuar"
-                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                  />
-                </div>
-              ) : (
-                /* PASO 2: Solo Código de Verificación */
-                <div className="animate-[fadeIn_0.3s_ease-out]">
-                  <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
-                    Código de verificación
-                    <span className="text-xs text-indigo-600 cursor-pointer hover:underline">Reenviar código</span>
-                  </label>
-                  <p className="text-xs text-slate-500 mb-3">Contraseña verificada. Te hemos enviado un código de 6 dígitos al correo de la empresa.</p>
-                  <input
-                    type="text"
-                    placeholder="0 0 0 0 0 0"
-                    maxLength="6"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 text-center tracking-[0.5em] font-mono text-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Botones de acción dinámicos */}
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-            <button
-              onClick={() => {
-                setShowSecurityModal(false)
-                setAuthStep(1) // Resetea el paso al cerrar
-              }}
-              className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
-            >
-              Cancelar
-            </button>
-
-            {authStep === 1 ? (
-              <button
-                onClick={() => setAuthStep(2)}
-                className="px-5 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg transition-colors shadow-sm"
-              >
-                Verificar contraseña
-              </button>
-            ) : (
-              <button
-                onClick={onConfirmPlanChange}
-                className="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors shadow-sm"
-              >
-                Autorizar y Cambiar Plan
-              </button>
-            )}
-          </div>
-
-        </div>
-      </div>
-    )}
-    </>
   )
 }
 
-function Sidebar({ activeTab, onTabChange }) {
+function SecurityModal({
+  authStep,
+  setAuthStep,
+  selectedPlan,
+  onConfirmPlanChange,
+  setShowSecurityModal,
+}) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+      <div className="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out]">
+
+        {/* Cabecera */}
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            Verificación de Seguridad
+          </h3>
+          <button onClick={() => { setShowSecurityModal(false); setAuthStep(1) }} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        {/* Cuerpo (Formulario) */}
+        <div className="p-6">
+          <div className="bg-indigo-50 border border-indigo-100 text-indigo-800 text-sm p-4 rounded-xl mb-6">
+            Estás a punto de cambiar al <strong>Plan {selectedPlan === 'basico' ? 'Básico' : 'Profesional'}</strong>. Para autorizar este cambio en la facturación, necesitamos validar tu identidad.
+          </div>
+
+          <div className="space-y-4">
+            {authStep === 1 ? (
+              /* PASO 1: Solo Contraseña */
+              <div className="animate-[fadeIn_0.3s_ease-out]">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Contraseña de administrador</label>
+                <input
+                  type="password"
+                  placeholder="Ingresa tu contraseña para continuar"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                />
+              </div>
+            ) : (
+              /* PASO 2: Solo Código de Verificación */
+              <div className="animate-[fadeIn_0.3s_ease-out]">
+                <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
+                  Código de verificación
+                  <span className="text-xs text-indigo-600 cursor-pointer hover:underline">Reenviar código</span>
+                </label>
+                <p className="text-xs text-slate-500 mb-3">Contraseña verificada. Te hemos enviado un código de 6 dígitos al correo de la empresa.</p>
+                <input
+                  type="text"
+                  placeholder="0 0 0 0 0 0"
+                  maxLength="6"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 text-center tracking-[0.5em] font-mono text-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Botones de acción dinámicos */}
+        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+          <button
+            onClick={() => {
+              setShowSecurityModal(false)
+              setAuthStep(1) // Resetea el paso al cerrar
+            }}
+            className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+          >
+            Cancelar
+          </button>
+
+          {authStep === 1 ? (
+            <button
+              onClick={() => setAuthStep(2)}
+              className="px-5 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg transition-colors shadow-sm"
+            >
+              Verificar contraseña
+            </button>
+          ) : (
+            <button
+              onClick={onConfirmPlanChange}
+              className="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors shadow-sm"
+            >
+              Autorizar y Cambiar Plan
+            </button>
+          )}
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+function Sidebar({ activeTab, onTabChange, activeModules }) {
   const items = [
     { id: 'servicio', label: 'Tu servicio', icon: Monitor },
     { id: 'pagos', label: 'Pagos', icon: CreditCard },
@@ -339,6 +342,33 @@ function Sidebar({ activeTab, onTabChange }) {
             </button>
           )
         })}
+        {/* Estos aparecen dinámicamente si se compran */}
+        {activeModules.includes('reservas') && (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              onTabChange('modulos')
+            }}
+            className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Gestión de Reservas
+          </a>
+        )}
+        {activeModules.includes('inventario') && (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+              onTabChange('modulos')
+            }}
+            className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            Inventarios
+          </a>
+        )}
       </nav>
       <div className="mt-auto p-4 border-t border-slate-100 flex flex-col gap-2">
         <button
@@ -797,118 +827,6 @@ function SupportView() {
   )
 }
 
-const moduleOptions = [
-  {
-    id: 'whatsapp',
-    title: 'Automatización de WhatsApp',
-    description:
-      'Envía recordatorios automáticos de reservas y confirmaciones de pedidos directamente al WhatsApp de tus clientes.',
-    price: '+$25.00/mes',
-    iconColor: 'bg-emerald-100 text-emerald-600',
-  },
-  {
-    id: 'loyalty',
-    title: 'Sistema de Fidelización',
-    description:
-      'Crea cupones de descuento y acumulación de puntos para premiar a tus clientes más frecuentes.',
-    price: '+$20.00/mes',
-    iconColor: 'bg-indigo-100 text-indigo-600',
-  },
-]
-
-function ModuleCard({ module }) {
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
-      <div className="flex items-center gap-3 mb-2">
-        <span
-          className={`w-10 h-10 rounded-full flex items-center justify-center ${module.iconColor}`}
-        >
-          <Puzzle className="w-5 h-5" />
-        </span>
-        <h3 className="font-bold text-lg text-slate-900">{module.title}</h3>
-      </div>
-      <p className="text-slate-600 text-sm mt-2 mb-6">{module.description}</p>
-      <div className="mt-auto flex items-center justify-between">
-        <span className="font-bold text-slate-900">{module.price}</span>
-        <button
-          type="button"
-          className="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
-        >
-          Solicitar activación
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function CustomModuleCard() {
-  return (
-    <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center w-full">
-      <div className="md:w-1/2">
-        <h3 className="text-2xl font-bold mb-2">
-          ¿Necesitas una funcionalidad a medida?
-        </h3>
-        <p className="text-slate-300 text-sm">
-          Si tienes una idea específica para tu restaurante que no está en
-          nuestro catálogo (ej. integración con tu sistema de facturación
-          local), cuéntanosla.
-        </p>
-      </div>
-      <div className="w-full md:w-1/2 flex flex-col gap-3">
-        <textarea
-          rows={3}
-          placeholder="Explica brevemente tu idea..."
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 resize-none"
-        />
-        <div className="flex gap-3">
-          <button
-            type="button"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex-1 transition-colors cursor-pointer"
-          >
-            Enviar propuesta
-          </button>
-          <button
-            type="button"
-            className="bg-white text-slate-900 hover:bg-slate-100 px-4 py-2 rounded-lg font-medium text-sm flex-1 text-center transition-colors cursor-pointer"
-          >
-            Agendar reunión
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function ModulesView() {
-  return (
-    <>
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-xl font-bold text-slate-900">
-          Potencia tu web con nuevos módulos
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {moduleOptions.map((module) => (
-          <ModuleCard key={module.id} module={module} />
-        ))}
-        {/* Tarjeta "Agregar Módulos" (Ghost Card) */}
-        <button className="flex flex-col items-center justify-center h-full min-h-[220px] rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 hover:bg-white hover:border-indigo-400 transition-all duration-300 group cursor-pointer p-6 w-full">
-          <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 mb-4 transition-colors duration-300">
-            <svg className="w-7 h-7 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-          </div>
-          <span className="text-lg font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">Buscar módulos</span>
-          <span className="text-sm text-slate-400 mt-2 text-center group-hover:text-slate-500 transition-colors">Explora el catálogo completo</span>
-        </button>
-      </div>
-
-      <CustomModuleCard />
-    </>
-  )
-}
-
 function ClientDashboard() {
   const [activeTab, setActiveTab] = useState('servicio')
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
@@ -919,6 +837,28 @@ function ClientDashboard() {
   const [selectedPlan, setSelectedPlan] = useState('profesional')
   const [showSecurityModal, setShowSecurityModal] = useState(false)
   const [authStep, setAuthStep] = useState(1)
+  const [activeModules, setActiveModules] = useState([]) // Arreglo vacío, sin módulos por defecto
+
+  const handleActivateModule = (moduleData) => {
+    // 1. Añadir a módulos activos
+    setActiveModules([...activeModules, moduleData.id])
+
+    // 2. Generar notificación
+    const newNotif = {
+      id: Date.now(),
+      title: 'Nuevo módulo activado',
+      message: `El módulo "${moduleData.title}" ha sido añadido a tu cuenta con éxito.`,
+      time: 'Justo ahora',
+    }
+    setNotifications([newNotif, ...notifications])
+    setHasUnread(true)
+  }
+
+  const handleRequestUpgrade = () => {
+    setSelectedPlan('profesional') // Pre-seleccionamos el plan profesional
+    setIsPlanModalOpen(true) // Abrimos PRIMERO el modal de selección de planes
+    setShowSecurityModal(false) // Nos aseguramos de que el modal de seguridad esté cerrado
+  }
 
   const handleConfirmPlanChange = () => {
     // 1. Cambiar el plan
@@ -939,11 +879,18 @@ function ClientDashboard() {
     setShowSecurityModal(false)
     setIsPlanModalOpen(false)
     setAuthStep(1)
+
+    // Redirigir a la vista principal para ver el cambio
+    setActiveTab('servicio')
   }
 
   return (
     <div className="flex h-screen bg-slate-50">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        activeModules={activeModules}
+      />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar
@@ -963,7 +910,14 @@ function ClientDashboard() {
           )}
           {activeTab === 'pagos' && <PaymentsView />}
           {activeTab === 'soporte' && <SupportView />}
-          {activeTab === 'modulos' && <ModulesView />}
+          {activeTab === 'modulos' && (
+            <ModulesView
+              activeModules={activeModules}
+              onActivateModule={handleActivateModule}
+              activePlan={activePlan}
+              onRequestUpgrade={handleRequestUpgrade}
+            />
+          )}
         </div>
       </div>
 
@@ -972,16 +926,26 @@ function ClientDashboard() {
           currentPlan={activePlan}
           selectedPlan={selectedPlan}
           setSelectedPlan={setSelectedPlan}
-          showSecurityModal={showSecurityModal}
-          setShowSecurityModal={setShowSecurityModal}
-          authStep={authStep}
-          setAuthStep={setAuthStep}
+          onContinue={() => {
+            setIsPlanModalOpen(false)
+            setShowSecurityModal(true)
+            setAuthStep(1)
+          }}
           onClose={() => {
             setShowSecurityModal(false)
             setAuthStep(1)
             setIsPlanModalOpen(false)
           }}
+        />
+      )}
+
+      {showSecurityModal && (
+        <SecurityModal
+          authStep={authStep}
+          setAuthStep={setAuthStep}
+          selectedPlan={selectedPlan}
           onConfirmPlanChange={handleConfirmPlanChange}
+          setShowSecurityModal={setShowSecurityModal}
         />
       )}
     </div>
