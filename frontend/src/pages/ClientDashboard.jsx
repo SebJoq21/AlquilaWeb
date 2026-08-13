@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ModulesView from '../components/ModulesView'
+import MenuPreview from '../components/MenuPreview'
+import MenuEditor from '../components/MenuEditor'
 import {
   CreditCard,
   Layers,
@@ -37,6 +39,15 @@ const paymentHistory = [
     amount: '$35.00',
     status: 'Pagado',
   },
+]
+
+const initialMenuData = [
+  { id: 1, name: 'Ceviche Clásico', description: 'Pesca del día marinada en limón sutil, ají limo, cebolla roja y culantro. Acompañado de choclo y camote.', price: '15.00', category: 'Entradas', image: 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
+  { id: 2, name: 'Tequeños de Lomo', description: 'Masa crujiente rellena de nuestro clásico lomo saltado, acompañados de salsa huancaína.', price: '8.00', category: 'Entradas', image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
+  { id: 3, name: 'Lomo Saltado', description: 'Trozos de lomo fino salteados al wok con cebolla, tomate, ají amarillo y sillao. Servido con papas fritas y arroz.', price: '22.00', category: 'Fondos', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
+  { id: 4, name: 'Ají de Gallina', description: 'Cremoso guiso de pechuga de pollo deshilachada con ají amarillo, pecanas y queso parmesano.', price: '18.00', category: 'Fondos', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
+  { id: 5, name: 'Pisco Sour', description: 'Nuestro cóctel bandera. Pisco Quebranta, zumo de limón, jarabe de goma, clara de huevo y amargo de Angostura.', price: '10.00', category: 'Bebidas', image: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
+  { id: 6, name: 'Chicha Morada', description: 'Refrescante bebida tradicional a base de maíz morado, piña, manzana, canela y clavo de olor.', price: '4.00', category: 'Bebidas', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
 ]
 
 const tickets = [
@@ -413,6 +424,8 @@ function TopBar({
     pagos: 'Gestión de pagos',
     soporte: 'Soporte Técnico',
     modulos: 'Módulos y Mejoras',
+    'ver-carta': 'Carta Digital y Menú',
+    'editor-carta': 'Editor de Menú',
   }
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const navigate = useNavigate()
@@ -554,7 +567,7 @@ function TopBar({
   )
 }
 
-function ServiceView({ activePlan, onChangePlan }) {
+function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
   return (
     <>
       {/* Contenedor Superior: Dominio y Plan */}
@@ -686,6 +699,47 @@ function ServiceView({ activePlan, onChangePlan }) {
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
+
+      {/* Sección: Gestión de Carta Digital */}
+      <div className="mt-8 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col lg:flex-row items-center justify-between gap-6 animate-[fadeIn_0.5s_ease-out]">
+
+        {/* Info y Resumen */}
+        <div className="flex items-center gap-5 w-full lg:w-auto">
+          <div className="w-16 h-16 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center shrink-0 border border-orange-100">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900 mb-1">Carta Digital y Menú</h3>
+            <p className="text-sm text-slate-500 mb-3 line-clamp-1 md:line-clamp-none">
+              Administra tus categorías, platos, precios y disponibilidad en tiempo real.
+            </p>
+
+            {/* Mini badges de estado */}
+            <div className="flex items-center gap-4 text-xs font-semibold text-slate-600">
+              <span className="flex items-center gap-1.5 bg-slate-100 px-2 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> 42 Platos activos
+              </span>
+              <span className="flex items-center gap-1.5 bg-slate-100 px-2 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-indigo-500"></span> 8 Categorías
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Botones de Acción */}
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto shrink-0 mt-4 lg:mt-0">
+          <button
+            onClick={onViewMenu}
+            className="px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:border-indigo-600 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            Ver carta
+          </button>
+        </div>
+
       </div>
     </>
   )
@@ -838,20 +892,28 @@ function ClientDashboard() {
   const [showSecurityModal, setShowSecurityModal] = useState(false)
   const [authStep, setAuthStep] = useState(1)
   const [activeModules, setActiveModules] = useState([]) // Arreglo vacío, sin módulos por defecto
+  const [menuItems, setMenuItems] = useState(initialMenuData)
+
+  const addNotification = (title, message) => {
+    const newNotif = {
+      id: Date.now(),
+      title,
+      message,
+      time: 'Justo ahora',
+    }
+    setNotifications([newNotif, ...notifications])
+    setHasUnread(true)
+  }
 
   const handleActivateModule = (moduleData) => {
     // 1. Añadir a módulos activos
     setActiveModules([...activeModules, moduleData.id])
 
     // 2. Generar notificación
-    const newNotif = {
-      id: Date.now(),
-      title: 'Nuevo módulo activado',
-      message: `El módulo "${moduleData.title}" ha sido añadido a tu cuenta con éxito.`,
-      time: 'Justo ahora',
-    }
-    setNotifications([newNotif, ...notifications])
-    setHasUnread(true)
+    addNotification(
+      'Nuevo módulo activado',
+      `El módulo "${moduleData.title}" ha sido añadido a tu cuenta con éxito.`
+    )
   }
 
   const handleRequestUpgrade = () => {
@@ -906,6 +968,22 @@ function ClientDashboard() {
             <ServiceView
               activePlan={activePlan}
               onChangePlan={() => setIsPlanModalOpen(true)}
+              onViewMenu={() => setActiveTab('ver-carta')}
+            />
+          )}
+          {activeTab === 'ver-carta' && (
+            <MenuPreview
+              menuItems={menuItems}
+              onBack={() => setActiveTab('servicio')}
+              onEditMenu={() => setActiveTab('editor-carta')}
+            />
+          )}
+          {activeTab === 'editor-carta' && (
+            <MenuEditor
+              menuItems={menuItems}
+              setMenuItems={setMenuItems}
+              onBack={() => setActiveTab('ver-carta')}
+              onNotify={addNotification}
             />
           )}
           {activeTab === 'pagos' && <PaymentsView />}
