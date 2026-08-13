@@ -1,20 +1,27 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  CheckCircle2,
   CreditCard,
   Layers,
   LifeBuoy,
   Monitor,
   Puzzle,
 } from 'lucide-react'
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  XAxis,
+} from 'recharts'
 
-const kpis = [
-  { title: 'Visitas Totales', value: '1,245', growth: '+12% este mes' },
-  { title: 'Escaneos QR en mesa', value: '850', growth: '+8% este mes' },
-  { title: 'Clics en Reservar', value: '112', growth: '+5% este mes' },
-  { title: 'Clics a WhatsApp', value: '45', growth: '+15% este mes' },
-]
+const dataVisitas = [{ name: 'Lun', v: 800 }, { name: 'Mar', v: 950 }, { name: 'Mié', v: 1100 }, { name: 'Jue', v: 1050 }, { name: 'Vie', v: 1245 }]
+const dataQR = [{ name: 'Lun', v: 400 }, { name: 'Mar', v: 300 }, { name: 'Mié', v: 550 }, { name: 'Jue', v: 700 }, { name: 'Vie', v: 850 }]
+const dataReservas = [{ name: 'Lun', v: 50 }, { name: 'Mar', v: 65 }, { name: 'Mié', v: 80 }, { name: 'Jue', v: 95 }, { name: 'Vie', v: 112 }]
+const dataWsp = [{ name: 'Lun', v: 15 }, { name: 'Mar', v: 20 }, { name: 'Mié', v: 28 }, { name: 'Jue', v: 35 }, { name: 'Vie', v: 45 }]
 
 const paymentHistory = [
   {
@@ -59,29 +66,20 @@ function SupportBadge({ status }) {
   )
 }
 
-const plans = [
-  {
-    id: 'basico',
-    name: 'Plan Básico',
-    price: '$40',
-    description:
-      'Carta digital QR sin sitio web completo. Ideal para locales pequeños.',
-  },
-  {
-    id: 'profesional',
-    name: 'Plan Profesional',
-    price: '$70',
-    description:
-      'Landing page completa, dominio propio y gestión por nuestro equipo.',
-    isCurrent: true,
-  },
-]
-
-function PlanModal({ onClose }) {
-  const [selectedPlan, setSelectedPlan] = useState('profesional')
-
+function PlanModal({
+  onClose,
+  currentPlan,
+  selectedPlan,
+  setSelectedPlan,
+  showSecurityModal,
+  setShowSecurityModal,
+  authStep,
+  setAuthStep,
+  onConfirmPlanChange,
+}) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out]">
         {/* Header del Modal */}
         <div className="flex justify-between items-center p-6 border-b border-slate-100">
@@ -118,44 +116,79 @@ function PlanModal({ onClose }) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                  selectedPlan === plan.id
-                    ? 'border-indigo-600 bg-indigo-50/50'
-                    : 'border-slate-200 hover:border-indigo-200 bg-white'
-                }`}
-              >
-                {plan.isCurrent && (
-                  <div className="absolute -top-3 left-6 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
-                    Plan Actual
-                  </div>
-                )}
-                <h3 className="font-bold text-slate-900 mb-1">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-3">
-                  <span className="text-2xl font-black text-slate-900">
-                    {plan.price}
-                  </span>
-                  <span className="text-sm text-slate-500">/mes</span>
-                </div>
-                <p className="text-sm text-slate-600">{plan.description}</p>
+            {/* TARJETA: PLAN BÁSICO */}
+            <div
+              onClick={() => setSelectedPlan('basico')}
+              className={`relative p-6 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPlan === 'basico'
+                  ? 'border-indigo-600 bg-indigo-50/10'
+                  : 'border-slate-200 hover:border-indigo-300'
+              }`}
+            >
+              {/* Aparece solo si el plan real es básico */}
+              {currentPlan === 'basico' && (
+                <span className="absolute -top-3 left-4 bg-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                  Plan Actual
+                </span>
+              )}
 
-                {/* Indicador visual de selección */}
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-bold text-slate-900">Plan Básico</h4>
                 <div
-                  className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    selectedPlan === plan.id
-                      ? 'border-indigo-600'
-                      : 'border-slate-300'
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    selectedPlan === 'basico' ? 'border-indigo-600' : 'border-slate-300'
                   }`}
                 >
-                  {selectedPlan === plan.id && (
-                    <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full" />
+                  {selectedPlan === 'basico' && (
+                    <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full"></div>
                   )}
                 </div>
               </div>
-            ))}
+              <div className="mb-3">
+                <span className="text-2xl font-black text-slate-900">$40</span>
+                <span className="text-sm text-slate-500">/mes</span>
+              </div>
+              <p className="text-sm text-slate-600">
+                Carta digital QR sin sitio web completo. Ideal para locales pequeños.
+              </p>
+            </div>
+
+            {/* TARJETA: PLAN PROFESIONAL */}
+            <div
+              onClick={() => setSelectedPlan('profesional')}
+              className={`relative p-6 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPlan === 'profesional'
+                  ? 'border-indigo-600 bg-indigo-50/10'
+                  : 'border-slate-200 hover:border-indigo-300'
+              }`}
+            >
+              {/* Aparece solo si el plan real es profesional */}
+              {currentPlan === 'profesional' && (
+                <span className="absolute -top-3 left-4 bg-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                  Plan Actual
+                </span>
+              )}
+
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-bold text-slate-900">Plan Profesional</h4>
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    selectedPlan === 'profesional' ? 'border-indigo-600' : 'border-slate-300'
+                  }`}
+                >
+                  {selectedPlan === 'profesional' && (
+                    <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full"></div>
+                  )}
+                </div>
+              </div>
+              <div className="mb-3">
+                <span className="text-2xl font-black text-slate-900">$70</span>
+                <span className="text-sm text-slate-500">/mes</span>
+              </div>
+              <p className="text-sm text-slate-600">
+                Landing page completa, dominio propio y gestión por nuestro equipo.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -170,14 +203,104 @@ function PlanModal({ onClose }) {
           </button>
           <button
             type="button"
-            onClick={onClose}
-            className="bg-indigo-600 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-indigo-700 transition-colors w-full sm:w-auto shadow-sm cursor-pointer"
+            disabled={selectedPlan === currentPlan}
+            onClick={() => setShowSecurityModal(true)}
+            className={`px-6 py-2.5 rounded-lg font-medium transition-all w-full sm:w-auto ${
+              selectedPlan === currentPlan
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm cursor-pointer'
+            }`}
           >
-            Confirmar cambio
+            {selectedPlan === currentPlan ? 'Plan Actual' : 'Continuar'}
           </button>
         </div>
       </div>
     </div>
+
+    {showSecurityModal && (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+        <div className="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out]">
+
+          {/* Cabecera */}
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+              Verificación de Seguridad
+            </h3>
+            <button onClick={() => { setShowSecurityModal(false); setAuthStep(1) }} className="text-slate-400 hover:text-slate-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+
+          {/* Cuerpo (Formulario) */}
+          <div className="p-6">
+            <div className="bg-indigo-50 border border-indigo-100 text-indigo-800 text-sm p-4 rounded-xl mb-6">
+              Estás a punto de cambiar al <strong>Plan {selectedPlan === 'basico' ? 'Básico' : 'Profesional'}</strong>. Para autorizar este cambio en la facturación, necesitamos validar tu identidad.
+            </div>
+
+            <div className="space-y-4">
+              {authStep === 1 ? (
+                /* PASO 1: Solo Contraseña */
+                <div className="animate-[fadeIn_0.3s_ease-out]">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">Contraseña de administrador</label>
+                  <input
+                    type="password"
+                    placeholder="Ingresa tu contraseña para continuar"
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                  />
+                </div>
+              ) : (
+                /* PASO 2: Solo Código de Verificación */
+                <div className="animate-[fadeIn_0.3s_ease-out]">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1 flex justify-between">
+                    Código de verificación
+                    <span className="text-xs text-indigo-600 cursor-pointer hover:underline">Reenviar código</span>
+                  </label>
+                  <p className="text-xs text-slate-500 mb-3">Contraseña verificada. Te hemos enviado un código de 6 dígitos al correo de la empresa.</p>
+                  <input
+                    type="text"
+                    placeholder="0 0 0 0 0 0"
+                    maxLength="6"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 text-center tracking-[0.5em] font-mono text-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Botones de acción dinámicos */}
+          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+            <button
+              onClick={() => {
+                setShowSecurityModal(false)
+                setAuthStep(1) // Resetea el paso al cerrar
+              }}
+              className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+
+            {authStep === 1 ? (
+              <button
+                onClick={() => setAuthStep(2)}
+                className="px-5 py-2.5 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 rounded-lg transition-colors shadow-sm"
+              >
+                Verificar contraseña
+              </button>
+            ) : (
+              <button
+                onClick={onConfirmPlanChange}
+                className="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors shadow-sm"
+              >
+                Autorizar y Cambiar Plan
+              </button>
+            )}
+          </div>
+
+        </div>
+      </div>
+    )}
+    </>
   )
 }
 
@@ -247,7 +370,14 @@ function Sidebar({ activeTab, onTabChange }) {
   )
 }
 
-function TopBar({ activeTab }) {
+function TopBar({
+  activeTab,
+  notifications,
+  hasUnread,
+  showNotifMenu,
+  setShowNotifMenu,
+  setHasUnread,
+}) {
   const titles = {
     servicio: 'Resumen de tu servicio',
     pagos: 'Gestión de pagos',
@@ -256,30 +386,71 @@ function TopBar({ activeTab }) {
   }
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const notifRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Si el menú está abierto, la referencia existe, y el clic NO fue dentro del contenedor...
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifMenu(false) // Cierra el menú
+      }
+    }
+
+    // Añadimos el event listener al documento
+    document.addEventListener('mousedown', handleClickOutside)
+
+    // Limpieza del event listener al desmontar
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [setShowNotifMenu])
 
   return (
     <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8">
       <h1 className="text-xl font-bold text-slate-900">{titles[activeTab]}</h1>
       <div className="flex items-center gap-4">
-        {/* Icono de Campana */}
-        <button
-          type="button"
-          className="text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {/* Contenedor de Notificaciones con Ref */}
+        <div className="relative" ref={notifRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setShowNotifMenu(!showNotifMenu)
+              setHasUnread(false) // Al abrir, marcamos como leído
+            }}
+            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors relative cursor-pointer"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-        </button>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+
+            {/* Punto Rojo (Indicador) */}
+            {hasUnread && (
+              <span className="absolute top-1 right-1.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-pulse"></span>
+            )}
+          </button>
+
+          {/* Dropdown de Notificaciones */}
+          {showNotifMenu && (
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-[fadeIn_0.2s_ease-out]">
+              <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h4 className="font-bold text-slate-800">Notificaciones</h4>
+              </div>
+              <div className="max-h-80 overflow-y-auto no-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-slate-500">
+                    No tienes notificaciones nuevas.
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div key={notif.id} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                      <p className="text-sm font-semibold text-slate-900 mb-1">{notif.title}</p>
+                      <p className="text-xs text-slate-600 leading-relaxed mb-2">{notif.message}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{notif.time}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Contenedor del Dropdown */}
         <div className="relative">
@@ -353,44 +524,138 @@ function TopBar({ activeTab }) {
   )
 }
 
-function DomainCard() {
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center mb-8">
-      <div>
-        <p className="text-sm text-slate-500 mb-1">Dominio Principal</p>
-        <a
-          href="https://www.mirestaurante.com"
-          className="text-indigo-600 font-medium hover:underline"
-        >
-          www.mirestaurante.com
-        </a>
-      </div>
-      <span className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full text-sm font-medium">
-        <CheckCircle2 className="w-4 h-4" />
-        Activo
-      </span>
-    </div>
-  )
-}
-
-function KpiCard({ kpi }) {
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-      <p className="text-sm text-slate-500 mb-2">{kpi.title}</p>
-      <p className="text-3xl font-extrabold text-slate-900 mb-2">{kpi.value}</p>
-      <p className="text-sm text-emerald-600 font-medium">{kpi.growth}</p>
-    </div>
-  )
-}
-
-function ServiceView() {
+function ServiceView({ activePlan, onChangePlan }) {
   return (
     <>
-      <DomainCard />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {kpis.map((kpi) => (
-          <KpiCard key={kpi.title} kpi={kpi} />
-        ))}
+      {/* Contenedor Superior: Dominio y Plan */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Tarjeta 1: Estado del Dominio */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-center shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+              Dominio Principal
+            </h3>
+            <span className="bg-green-50 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-green-100">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>{' '}
+              Activo
+            </span>
+          </div>
+          <a
+            href="https://www.mirestaurante.com"
+            target="_blank"
+            rel="noreferrer"
+            className="text-xl font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+          >
+            www.mirestaurante.com
+          </a>
+        </div>
+
+        {/* Tarjeta 2: Plan Actual y Upgrade */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-center shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+              Plan Actual
+            </h3>
+            <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100">
+              Facturación Mensual
+            </span>
+          </div>
+          <div className="flex justify-between items-end">
+            <p className="text-2xl font-black text-slate-900 capitalize">{activePlan}</p>
+            <button
+              type="button"
+              onClick={onChangePlan}
+              className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors underline decoration-indigo-600/30 hover:decoration-indigo-600 underline-offset-4 cursor-pointer"
+            >
+              Cambiar plan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Grid de Métricas con Gráficos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* 1. Visitas Totales (Area Chart) */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm overflow-hidden group">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-500 mb-2">Visitas Totales</h3>
+            <div className="flex items-end gap-3">
+              <span className="text-3xl font-black text-slate-900">1,245</span>
+              <span className="text-sm font-bold text-green-500 mb-1">+12% este mes</span>
+            </div>
+          </div>
+          <div className="h-24 w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dataVisitas} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorVisitas" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
+                <Area type="monotone" dataKey="v" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorVisitas)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 2. Escaneos QR (Bar Chart) */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm overflow-hidden group">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-500 mb-2">Escaneos QR en mesa</h3>
+            <div className="flex items-end gap-3">
+              <span className="text-3xl font-black text-slate-900">850</span>
+              <span className="text-sm font-bold text-green-500 mb-1">+8% este mes</span>
+            </div>
+          </div>
+          <div className="h-24 w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dataQR} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
+                <Bar dataKey="v" fill="#14b8a6" radius={[4, 4, 0, 0]} barSize={24} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 3. Clics en Reservar (Line Chart) */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm overflow-hidden group">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-500 mb-2">Clics en Reservar</h3>
+            <div className="flex items-end gap-3">
+              <span className="text-3xl font-black text-slate-900">112</span>
+              <span className="text-sm font-bold text-green-500 mb-1">+5% este mes</span>
+            </div>
+          </div>
+          <div className="h-24 w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dataReservas} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
+                <Line type="monotone" dataKey="v" stroke="#f59e0b" strokeWidth={3} dot={{ r: 3, fill: "#f59e0b", strokeWidth: 2, stroke: "#fff" }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 4. Clics a WhatsApp (Line Chart) */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm overflow-hidden group">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-slate-500 mb-2">Clics a WhatsApp</h3>
+            <div className="flex items-end gap-3">
+              <span className="text-3xl font-black text-slate-900">45</span>
+              <span className="text-sm font-bold text-green-500 mb-1">+15% este mes</span>
+            </div>
+          </div>
+          <div className="h-24 w-full mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dataWsp} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
+                <Line type="monotone" dataKey="v" stroke="#10b981" strokeWidth={3} dot={{ r: 3, fill: "#10b981", strokeWidth: 2, stroke: "#fff" }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </>
   )
@@ -406,7 +671,7 @@ function FinanceCard() {
   )
 }
 
-function NextPaymentCard({ onChangePlan }) {
+function NextPaymentCard() {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
       <div className="flex justify-between items-start mb-2">
@@ -419,7 +684,7 @@ function NextPaymentCard({ onChangePlan }) {
       </h3>
       <p className="text-3xl font-black text-slate-900 mb-6">$70.00</p>
 
-      <div className="mt-auto space-y-3">
+      <div className="mt-auto">
         <button
           type="button"
           disabled
@@ -427,24 +692,17 @@ function NextPaymentCard({ onChangePlan }) {
         >
           Pagar ahora
         </button>
-        <button
-          type="button"
-          onClick={onChangePlan}
-          className="w-full text-indigo-600 font-medium py-2 rounded-lg hover:bg-indigo-50 transition-colors text-sm cursor-pointer"
-        >
-          Cambiar plan
-        </button>
       </div>
     </div>
   )
 }
 
-function PaymentsView({ onChangePlan }) {
+function PaymentsView() {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <FinanceCard />
-        <NextPaymentCard onChangePlan={onChangePlan} />
+        <NextPaymentCard />
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -654,24 +912,78 @@ function ModulesView() {
 function ClientDashboard() {
   const [activeTab, setActiveTab] = useState('servicio')
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
+  const [activePlan, setActivePlan] = useState('profesional') // El plan real
+  const [notifications, setNotifications] = useState([])
+  const [hasUnread, setHasUnread] = useState(false)
+  const [showNotifMenu, setShowNotifMenu] = useState(false) // Para abrir el dropdown
+  const [selectedPlan, setSelectedPlan] = useState('profesional')
+  const [showSecurityModal, setShowSecurityModal] = useState(false)
+  const [authStep, setAuthStep] = useState(1)
+
+  const handleConfirmPlanChange = () => {
+    // 1. Cambiar el plan
+    setActivePlan(selectedPlan)
+
+    // 2. Generar la notificación
+    const newNotif = {
+      id: Date.now(),
+      title: 'Plan actualizado con éxito',
+      message: `Has cambiado al Plan ${selectedPlan === 'basico' ? 'Básico' : 'Profesional'}. El nuevo monto se verá reflejado en tu próximo ciclo de facturación.`,
+      time: 'Justo ahora',
+    }
+
+    setNotifications([newNotif, ...notifications])
+    setHasUnread(true)
+
+    // 3. Cerrar modales y resetear
+    setShowSecurityModal(false)
+    setIsPlanModalOpen(false)
+    setAuthStep(1)
+  }
 
   return (
     <div className="flex h-screen bg-slate-50">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopBar activeTab={activeTab} />
-        <div className="flex-1 overflow-y-auto p-8">
-          {activeTab === 'servicio' && <ServiceView />}
-          {activeTab === 'pagos' && (
-            <PaymentsView onChangePlan={() => setIsPlanModalOpen(true)} />
+        <TopBar
+          activeTab={activeTab}
+          notifications={notifications}
+          hasUnread={hasUnread}
+          showNotifMenu={showNotifMenu}
+          setShowNotifMenu={setShowNotifMenu}
+          setHasUnread={setHasUnread}
+        />
+        <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+          {activeTab === 'servicio' && (
+            <ServiceView
+              activePlan={activePlan}
+              onChangePlan={() => setIsPlanModalOpen(true)}
+            />
           )}
+          {activeTab === 'pagos' && <PaymentsView />}
           {activeTab === 'soporte' && <SupportView />}
           {activeTab === 'modulos' && <ModulesView />}
         </div>
       </div>
 
-      {isPlanModalOpen && <PlanModal onClose={() => setIsPlanModalOpen(false)} />}
+      {isPlanModalOpen && (
+        <PlanModal
+          currentPlan={activePlan}
+          selectedPlan={selectedPlan}
+          setSelectedPlan={setSelectedPlan}
+          showSecurityModal={showSecurityModal}
+          setShowSecurityModal={setShowSecurityModal}
+          authStep={authStep}
+          setAuthStep={setAuthStep}
+          onClose={() => {
+            setShowSecurityModal(false)
+            setAuthStep(1)
+            setIsPlanModalOpen(false)
+          }}
+          onConfirmPlanChange={handleConfirmPlanChange}
+        />
+      )}
     </div>
   )
 }
