@@ -185,7 +185,6 @@ function Sidebar({ activeTab, onTabChange }) {
   const items = [
     { id: 'servicio', label: 'Tu servicio', icon: Monitor },
     { id: 'pagos', label: 'Pagos', icon: CreditCard },
-    { id: 'modulos', label: 'Añadir Módulos', icon: Puzzle },
   ]
 
   return (
@@ -218,7 +217,19 @@ function Sidebar({ activeTab, onTabChange }) {
           )
         })}
       </nav>
-      <div className="mt-auto p-4 border-t border-slate-100">
+      <div className="mt-auto p-4 border-t border-slate-100 flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => onTabChange('modulos')}
+          className={`w-full text-left px-4 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
+            activeTab === 'modulos'
+              ? 'bg-indigo-50 text-indigo-700 font-medium cursor-pointer'
+              : 'text-slate-600 hover:bg-slate-50 cursor-pointer'
+          }`}
+        >
+          <Puzzle className="w-5 h-5" />
+          <span className="font-medium text-sm">Añadir Módulos</span>
+        </button>
         <button
           type="button"
           onClick={() => onTabChange('soporte')}
@@ -574,7 +585,7 @@ function ModuleCard({ module }) {
 
 function CustomModuleCard() {
   return (
-    <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-lg mt-2 flex flex-col md:flex-row gap-8 items-center lg:col-span-2">
+    <div className="bg-slate-900 text-white p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8 items-center w-full">
       <div className="md:w-1/2">
         <h3 className="text-2xl font-bold mb-2">
           ¿Necesitas una funcionalidad a medida?
@@ -619,12 +630,23 @@ function ModulesView() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {moduleOptions.map((module) => (
           <ModuleCard key={module.id} module={module} />
         ))}
-        <CustomModuleCard />
+        {/* Tarjeta "Agregar Módulos" (Ghost Card) */}
+        <button className="flex flex-col items-center justify-center h-full min-h-[220px] rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 hover:bg-white hover:border-indigo-400 transition-all duration-300 group cursor-pointer p-6 w-full">
+          <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 mb-4 transition-colors duration-300">
+            <svg className="w-7 h-7 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+          <span className="text-lg font-bold text-slate-600 group-hover:text-indigo-600 transition-colors">Buscar módulos</span>
+          <span className="text-sm text-slate-400 mt-2 text-center group-hover:text-slate-500 transition-colors">Explora el catálogo completo</span>
+        </button>
       </div>
+
+      <CustomModuleCard />
     </>
   )
 }
