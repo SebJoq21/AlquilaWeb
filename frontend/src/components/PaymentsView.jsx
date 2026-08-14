@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
 
-// Datos extendidos para incluir compras de módulos
-const paymentHistory = [
-  { id: 1, date: '15 Oct 2026', concept: 'Módulo: Sistema de Fidelización', amount: '$20.00', status: 'Pagado', type: 'module', day: 15 },
-  { id: 2, date: '01 Oct 2026', concept: 'Plan Profesional - Mensualidad', amount: '$70.00', status: 'Pagado', type: 'plan', day: 1 },
-  { id: 3, date: '01 Sep 2026', concept: 'Plan Profesional - Adelanto 50%', amount: '$35.00', status: 'Pagado', type: 'plan', day: 1 },
-];
-
 function FinanceCard() {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
@@ -41,15 +34,22 @@ function NextPaymentCard() {
   );
 }
 
-export default function PaymentsView() {
+export default function PaymentsView({ paymentHistory }) {
   const [selectedDay, setSelectedDay] = useState(null);
 
-  // Lógica simple para renderizar un mes estático de prueba (Octubre 2026)
-  const daysInMonth = Array.from({ length: 31 }, (_, i) => i + 1);
-  const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
-  const emptyStartDays = Array.from({ length: 4 }); // Asumiendo que empieza en Jueves
+  // Configuración dinámica del mes actual
+  const today = new Date();
+  const currentMonthName = today.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  // Poner la primera letra en mayúscula: "Agosto 2026"
+  const formattedMonth = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1);
 
-  // Filtrar historial según el día seleccionado
+  const daysInMonth = Array.from({ length: new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() }, (_, i) => i + 1);
+  const weekDays = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
+
+  // Determinar qué día de la semana empieza el mes para dejar espacios vacíos
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getDay();
+  const emptyStartDays = Array.from({ length: firstDayOfMonth });
+
   const displayedHistory = selectedDay
     ? paymentHistory.filter(p => p.day === selectedDay)
     : paymentHistory;
@@ -71,7 +71,7 @@ export default function PaymentsView() {
             <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
-            <h3 className="font-bold text-slate-900">Octubre 2026</h3>
+            <h3 className="font-bold text-slate-900">{formattedMonth}</h3>
             <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
@@ -127,7 +127,7 @@ export default function PaymentsView() {
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
           <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
             <h2 className="font-bold text-slate-900">
-              {selectedDay ? `Movimientos del ${selectedDay} de Octubre` : 'Historial de Movimientos'}
+              {selectedDay ? `Movimientos del ${selectedDay} de ${formattedMonth.split(' ')[0]}` : 'Historial de Movimientos'}
             </h2>
             {selectedDay && (
               <button onClick={() => setSelectedDay(null)} className="text-xs text-indigo-600 font-medium hover:underline">

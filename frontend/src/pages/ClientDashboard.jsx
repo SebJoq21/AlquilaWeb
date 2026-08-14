@@ -402,8 +402,28 @@ function TopBar({
     'editor-carta': 'Editor de Menú',
   }
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const [tick, setTick] = useState(0) // Para forzar re-render cada minuto
   const navigate = useNavigate()
   const notifRef = useRef(null)
+
+  useEffect(() => {
+    // Actualiza los textos de tiempo cada 60 segundos
+    const timer = setInterval(() => setTick(t => t + 1), 60000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Helper de tiempo relativo
+  const getTimeAgo = (timestamp) => {
+    void tick // Forza el re-cálculo de Date.now() en cada tick (re-render por minuto)
+    if (!timestamp) return 'Justo ahora'
+    const seconds = Math.floor((Date.now() - timestamp) / 1000)
+    if (seconds < 60) return 'Justo ahora'
+    const minutes = Math.floor(seconds / 60)
+    if (minutes < 60) return `Hace ${minutes} min`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return `Hace ${hours} h`
+    return `Hace ${Math.floor(hours / 24)} d`
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -460,7 +480,7 @@ function TopBar({
                     <div key={notif.id} className="p-4 border-b border-slate-50 hover:bg-slate-50 transition-colors">
                       <p className="text-sm font-semibold text-slate-900 mb-1">{notif.title}</p>
                       <p className="text-xs text-slate-600 leading-relaxed mb-2">{notif.message}</p>
-                      <p className="text-[10px] text-slate-400 font-medium">{notif.time}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{getTimeAgo(notif.timestamp)}</p>
                     </div>
                   ))
                 )}
@@ -732,27 +752,40 @@ function ClientDashboard() {
   const [activeModules, setActiveModules] = useState([]) // Arreglo vacío, sin módulos por defecto
   const [menuItems, setMenuItems] = useState(initialMenuData)
   const [tickets, setTickets] = useState(initialTickets)
+  const [paymentHistory, setPaymentHistory] = useState([
+    { id: 1, date: '01 Ago 2026', concept: 'Plan Profesional - Mensualidad', amount: '$70.00', status: 'Pagado', type: 'plan', day: 1 },
+  ])
 
   const addNotification = (title, message) => {
     const newNotif = {
       id: Date.now(),
       title,
       message,
-      time: 'Justo ahora',
+      timestamp: Date.now(), // Guardamos la fecha exacta en ms
     }
-    setNotifications([newNotif, ...notifications])
+    setNotifications(prev => [newNotif, ...prev])
     setHasUnread(true)
   }
 
   const handleActivateModule = (moduleData) => {
-    // 1. Añadir a módulos activos
     setActiveModules([...activeModules, moduleData.id])
 
-    // 2. Generar notificación
-    addNotification(
-      'Nuevo módulo activado',
-      `El módulo "${moduleData.title}" ha sido añadido a tu cuenta con éxito.`
-    )
+    // Extraer precio numérico (ej. de "+$25.00/mes" a "$25.00")
+    const cleanPrice = moduleData.price.replace('+', '').replace('/mes', '')
+    const today = new Date()
+
+    const newPayment = {
+      id: Date.now(),
+      date: today.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+      concept: `Módulo: ${moduleData.title}`,
+      amount: cleanPrice,
+      status: 'Pagado',
+      type: 'module',
+      day: today.getDate()
+    }
+    setPaymentHistory([newPayment, ...paymentHistory])
+
+    addNotification('Nuevo módulo activado', `El módulo "${moduleData.title}" ha sido añadido a tu cuenta.`)
   }
 
   const handleRequestUpgrade = () => {
@@ -762,26 +795,26 @@ function ClientDashboard() {
   }
 
   const handleConfirmPlanChange = () => {
-    // 1. Cambiar el plan
     setActivePlan(selectedPlan)
+    const today = new Date()
+    const amount = selectedPlan === 'basico' ? '$40.00' : '$70.00'
 
-    // 2. Generar la notificación
-    const newNotif = {
+    const newPayment = {
       id: Date.now(),
-      title: 'Plan actualizado con éxito',
-      message: `Has cambiado al Plan ${selectedPlan === 'basico' ? 'Básico' : 'Profesional'}. El nuevo monto se verá reflejado en tu próximo ciclo de facturación.`,
-      time: 'Justo ahora',
+      date: today.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+      concept: `Cambio a Plan ${selectedPlan === 'basico' ? 'Básico' : 'Profesional'}`,
+      amount: amount,
+      status: 'Pagado',
+      type: 'plan',
+      day: today.getDate()
     }
+    setPaymentHistory([newPayment, ...paymentHistory])
 
-    setNotifications([newNotif, ...notifications])
-    setHasUnread(true)
+    addNotification('Plan actualizado con éxito', `Has cambiado al Plan ${selectedPlan === 'basico' ? 'Básico' : 'Profesional'}.`)
 
-    // 3. Cerrar modales y resetear
     setShowSecurityModal(false)
     setIsPlanModalOpen(false)
     setAuthStep(1)
-
-    // Redirigir a la vista principal para ver el cambio
     setActiveTab('servicio')
   }
 
@@ -825,7 +858,9 @@ function ClientDashboard() {
               onNotify={addNotification}
             />
           )}
-          {activeTab === 'pagos' && <PaymentsView />}
+          {activeTab === 'pagos' && (
+            <PaymentsView paymentHistory={paymentHistory} />
+          )}
           {activeTab === 'soporte' && (
             <SupportView
               tickets={tickets}
