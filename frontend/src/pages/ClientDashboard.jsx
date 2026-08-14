@@ -5,6 +5,7 @@ import MenuPreview from '../components/MenuPreview'
 import MenuEditor from '../components/MenuEditor'
 import SupportView from '../components/SupportView'
 import PaymentsView from '../components/PaymentsView'
+import SettingsView from '../components/SettingsView'
 import {
   CreditCard,
   Layers,
@@ -387,6 +388,7 @@ function Sidebar({ activeTab, onTabChange, activeModules }) {
 
 function TopBar({
   activeTab,
+  setActiveTab,
   notifications,
   hasUnread,
   showNotifMenu,
@@ -400,6 +402,7 @@ function TopBar({
     modulos: 'Módulos y Mejoras',
     'ver-carta': 'Carta Digital y Menú',
     'editor-carta': 'Editor de Menú',
+    configuracion: 'Configuración de la cuenta',
   }
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const [tick, setTick] = useState(0) // Para forzar re-render cada minuto
@@ -525,7 +528,10 @@ function TopBar({
               <button
                 type="button"
                 className="w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors"
-                onClick={() => setIsProfileMenuOpen(false)}
+                onClick={() => {
+                  setIsProfileMenuOpen(false)
+                  setActiveTab('configuracion')
+                }}
               >
                 Configuración
               </button>
@@ -847,6 +853,7 @@ function ClientDashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           notifications={notifications}
           hasUnread={hasUnread}
           showNotifMenu={showNotifMenu}
@@ -885,6 +892,9 @@ function ClientDashboard() {
               setTickets={setTickets}
               onNotify={addNotification}
             />
+          )}
+          {activeTab === 'configuracion' && (
+            <SettingsView onNotify={addNotification} />
           )}
           {activeTab === 'modulos' && (
             <ModulesView
