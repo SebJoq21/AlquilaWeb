@@ -570,50 +570,53 @@ function TopBar({
 function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
   return (
     <>
-      {/* Contenedor Superior: Dominio y Plan */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      {/* Contenedor Superior: Dominio y Plan Separados pero Destacados */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
         {/* Tarjeta 1: Estado del Dominio */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-center shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-              Dominio Principal
-            </h3>
-            <span className="bg-green-50 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-green-100">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>{' '}
-              Activo
+        <div className="bg-white rounded-2xl border-2 border-indigo-50 shadow-md hover:shadow-lg hover:-translate-y-1 hover:border-indigo-100 transition-all duration-300 p-6 flex flex-col justify-center group">
+          <div className="flex justify-between items-start mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100/50 group-hover:bg-indigo-100 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+              </div>
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                Dominio Principal
+              </h3>
+            </div>
+            <span className="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-emerald-100">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Activo
             </span>
           </div>
-          <a
-            href="https://www.mirestaurante.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-xl font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-          >
+          <a href="https://www.mirestaurante.com" target="_blank" rel="noreferrer" className="text-xl sm:text-2xl font-black text-slate-900 hover:text-indigo-600 transition-colors flex items-center gap-2 w-max">
             www.mirestaurante.com
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
           </a>
         </div>
 
-        {/* Tarjeta 2: Plan Actual y Upgrade */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-center shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-              Plan Actual
-            </h3>
-            <span className="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full border border-indigo-100">
+        {/* Tarjeta 2: Plan Actual */}
+        <div className="bg-white rounded-2xl border-2 border-slate-100 shadow-md hover:shadow-lg hover:-translate-y-1 hover:border-slate-200 transition-all duration-300 p-6 flex flex-col justify-center group">
+          <div className="flex justify-between items-start mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center border border-orange-100/50 group-hover:bg-orange-100 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+              </div>
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                Plan Actual
+              </h3>
+            </div>
+            <span className="bg-slate-50 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200">
               Facturación Mensual
             </span>
           </div>
           <div className="flex justify-between items-end">
-            <p className="text-2xl font-black text-slate-900 capitalize">{activePlan}</p>
-            <button
-              type="button"
-              onClick={onChangePlan}
-              className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors underline decoration-indigo-600/30 hover:decoration-indigo-600 underline-offset-4 cursor-pointer"
-            >
+            <p className="text-xl sm:text-2xl font-black text-slate-900 capitalize">{activePlan}</p>
+            <button type="button" onClick={onChangePlan} className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors underline decoration-indigo-600/30 hover:decoration-indigo-600 underline-offset-4 cursor-pointer">
               Cambiar plan
             </button>
           </div>
         </div>
+
       </div>
 
       {/* Grid de Métricas con Gráficos */}

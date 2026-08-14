@@ -22,7 +22,7 @@ export default function MenuPreview({ menuItems, onBack, onEditMenu }) {
           </button>
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Vista Previa del Menú</h2>
-            <p className="text-sm text-slate-500">Así es como tus clientes ven tu carta digital.</p>
+            <p className="text-sm text-slate-500">Estos son los platos de tu carta.</p>
           </div>
         </div>
 
