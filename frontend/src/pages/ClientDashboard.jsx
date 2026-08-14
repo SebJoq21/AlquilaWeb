@@ -794,6 +794,24 @@ function ClientDashboard() {
     setShowSecurityModal(false) // Nos aseguramos de que el modal de seguridad esté cerrado
   }
 
+  const handleCreateProposal = (proposalData) => {
+    const newTicket = {
+      id: `#TK-${Math.floor(Math.random() * 9000) + 1000}`,
+      subject: `💡 Propuesta: ${proposalData.title}`,
+      status: 'Enviado',
+      updated: 'Justo ahora'
+    }
+
+    setTickets([newTicket, ...tickets])
+    addNotification(
+      'Propuesta enviada con éxito',
+      `Tu idea "${proposalData.title}" ha sido recibida. Nuestro equipo la evaluará y te contactará por el ticket generado.`
+    )
+
+    // Redirigir al usuario al área de soporte para que vea su ticket
+    setActiveTab('soporte')
+  }
+
   const handleConfirmPlanChange = () => {
     setActivePlan(selectedPlan)
     const today = new Date()
@@ -874,6 +892,7 @@ function ClientDashboard() {
               onActivateModule={handleActivateModule}
               activePlan={activePlan}
               onRequestUpgrade={handleRequestUpgrade}
+              onCreateProposal={handleCreateProposal}
             />
           )}
         </div>

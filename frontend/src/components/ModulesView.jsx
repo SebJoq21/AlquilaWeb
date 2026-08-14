@@ -53,9 +53,24 @@ export default function ModulesView({
   onActivateModule,
   activePlan,
   onRequestUpgrade,
+  onCreateProposal,
 }) {
   const [selectedModule, setSelectedModule] = useState(null)
   const [authStep, setAuthStep] = useState(1)
+
+  // Nuevos estados para la propuesta
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
+  const [proposalForm, setProposalForm] = useState({ title: '', description: '', value: '' })
+
+  const submitProposal = () => {
+    if (!proposalForm.title || !proposalForm.description) {
+      alert("Por favor completa el título y la descripción de tu idea.")
+      return
+    }
+    onCreateProposal(proposalForm)
+    setIsProposalModalOpen(false)
+    setProposalForm({ title: '', description: '', value: '' })
+  }
 
   // PAYWALL: Si el plan es básico, mostramos la pantalla de Upsell y cortamos la ejecución aquí
   if (activePlan === 'basico') {
@@ -128,24 +143,24 @@ export default function ModulesView({
         ))}
       </div>
 
-      {/* Banner: Funcionalidad a Medida */}
-      <div className="w-full bg-slate-900 rounded-2xl p-8 flex flex-col lg:flex-row justify-between items-center gap-8 shadow-lg">
-        <div className="lg:w-1/2">
+      {/* Banner de Propuesta a Medida */}
+      <div className="mt-8 bg-slate-900 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+        {/* Decoración de fondo */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+        <div className="relative z-10 text-center md:text-left">
           <h3 className="text-2xl font-bold text-white mb-2">¿Necesitas una funcionalidad a medida?</h3>
-          <p className="text-slate-400 text-sm leading-relaxed">
-            Si tienes una idea específica para tu restaurante que no está en nuestro catálogo (ej. integración con tu sistema de facturación local), cuéntanosla.
+          <p className="text-slate-400 max-w-2xl">
+            Si tienes una idea específica para tu restaurante que no está en nuestro catálogo (ej. integración con tu sistema de facturación local, reportes especiales), cuéntanosla.
           </p>
         </div>
-        <div className="lg:w-1/2 flex flex-col sm:flex-row gap-3 w-full">
-          <input
-            type="text"
-            placeholder="Explica brevemente tu idea..."
-            className="flex-1 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-indigo-500 transition-colors"
-          />
-          <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-lg transition-colors whitespace-nowrap shadow-sm">
-            Enviar propuesta
-          </button>
-        </div>
+
+        <button
+          onClick={() => setIsProposalModalOpen(true)}
+          className="relative z-10 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] shrink-0 w-full md:w-auto"
+        >
+          Redactar propuesta
+        </button>
       </div>
       </div>
 
@@ -192,6 +207,70 @@ export default function ModulesView({
               ) : (
                 <button onClick={() => { onActivateModule(selectedModule); setSelectedModule(null); setAuthStep(1); }} className="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg shadow-sm">Confirmar y Activar</button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Propuesta a Medida */}
+      {isProposalModalOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
+          <div className="bg-white max-w-lg w-full rounded-2xl shadow-2xl overflow-hidden animate-[scaleUp_0.2s_ease-out] flex flex-col max-h-[90vh]">
+
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                Nueva funcionalidad a medida
+              </h3>
+              <button onClick={() => setIsProposalModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto no-scrollbar space-y-5">
+              <div className="bg-indigo-50 text-indigo-800 text-sm p-4 rounded-xl">
+                Comparte tu idea con nuestro equipo de desarrollo. Analizaremos la viabilidad técnica y te enviaremos una cotización y tiempos de entrega mediante un ticket de soporte.
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Título de tu idea</label>
+                <input
+                  type="text"
+                  value={proposalForm.title}
+                  onChange={(e) => setProposalForm({...proposalForm, title: e.target.value})}
+                  placeholder="Ej. Integración con impresora de cocina Bluetooth"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Descripción de la funcionalidad</label>
+                <textarea
+                  value={proposalForm.description}
+                  onChange={(e) => setProposalForm({...proposalForm, description: e.target.value})}
+                  rows="3"
+                  placeholder="Explica detalladamente cómo te gustaría que funcione..."
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
+                ></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">¿Qué problema resuelve en tu local? <span className="text-slate-400 font-normal">(Opcional)</span></label>
+                <textarea
+                  value={proposalForm.value}
+                  onChange={(e) => setProposalForm({...proposalForm, value: e.target.value})}
+                  rows="2"
+                  placeholder="Ej. Evitaría que los mozos caminen hasta la cocina..."
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all resize-none"
+                ></textarea>
+              </div>
+            </div>
+
+            <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 shrink-0">
+              <button onClick={() => setIsProposalModalOpen(false)} className="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
+                Cancelar
+              </button>
+              <button onClick={submitProposal} className="px-5 py-2.5 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors shadow-sm">
+                Enviar Propuesta
+              </button>
             </div>
           </div>
         </div>
