@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import ModulesView from '../components/ModulesView'
 import MenuPreview from '../components/MenuPreview'
 import MenuEditor from '../components/MenuEditor'
+import SupportView from '../components/SupportView'
+import PaymentsView from '../components/PaymentsView'
 import {
   CreditCard,
   Layers,
@@ -26,21 +28,6 @@ const dataQR = [{ name: 'Lun', v: 400 }, { name: 'Mar', v: 300 }, { name: 'Mié'
 const dataReservas = [{ name: 'Lun', v: 50 }, { name: 'Mar', v: 65 }, { name: 'Mié', v: 80 }, { name: 'Jue', v: 95 }, { name: 'Vie', v: 112 }]
 const dataWsp = [{ name: 'Lun', v: 15 }, { name: 'Mar', v: 20 }, { name: 'Mié', v: 28 }, { name: 'Jue', v: 35 }, { name: 'Vie', v: 45 }]
 
-const paymentHistory = [
-  {
-    date: '01 Oct 2026',
-    concept: 'Plan Profesional - Mensualidad',
-    amount: '$70.00',
-    status: 'Pagado',
-  },
-  {
-    date: '01 Sep 2026',
-    concept: 'Plan Profesional - Adelanto 50%',
-    amount: '$35.00',
-    status: 'Pagado',
-  },
-]
-
 const initialMenuData = [
   { id: 1, name: 'Ceviche Clásico', description: 'Pesca del día marinada en limón sutil, ají limo, cebolla roja y culantro. Acompañado de choclo y camote.', price: '15.00', category: 'Entradas', image: 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
   { id: 2, name: 'Tequeños de Lomo', description: 'Masa crujiente rellena de nuestro clásico lomo saltado, acompañados de salsa huancaína.', price: '8.00', category: 'Entradas', image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
@@ -50,7 +37,7 @@ const initialMenuData = [
   { id: 6, name: 'Chicha Morada', description: 'Refrescante bebida tradicional a base de maíz morado, piña, manzana, canela y clavo de olor.', price: '4.00', category: 'Bebidas', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80', status: 'Activo' },
 ]
 
-const tickets = [
+const initialTickets = [
   {
     id: '#TK-0012',
     subject: 'Actualizar menú de temporada',
@@ -64,19 +51,6 @@ const tickets = [
     updated: 'Hace 2 días',
   },
 ]
-
-function SupportBadge({ status }) {
-  const isResolved = status === 'Resuelto'
-  return (
-    <span
-      className={`px-3 py-1 rounded-full text-xs font-medium ${
-        isResolved ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
-      }`}
-    >
-      {status}
-    </span>
-  )
-}
 
 function PlanModal({
   onClose,
@@ -745,142 +719,6 @@ function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
   )
 }
 
-function FinanceCard() {
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-      <p className="text-sm text-slate-500 mb-2">Deuda actual</p>
-      <p className="text-4xl font-extrabold text-slate-900 mb-2">$0.00</p>
-      <p className="text-sm text-emerald-600 font-medium">Todo al día</p>
-    </div>
-  )
-}
-
-function NextPaymentCard() {
-  return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
-      <div className="flex justify-between items-start mb-2">
-        <span className="text-sm font-medium text-slate-500">
-          Próximo pago (Plan Profesional)
-        </span>
-      </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-1">
-        1 de Noviembre, 2026
-      </h3>
-      <p className="text-3xl font-black text-slate-900 mb-6">$70.00</p>
-
-      <div className="mt-auto">
-        <button
-          type="button"
-          disabled
-          className="w-full bg-slate-100 text-slate-400 font-medium py-2.5 rounded-lg cursor-not-allowed"
-        >
-          Pagar ahora
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function PaymentsView() {
-  return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <FinanceCard />
-        <NextPaymentCard />
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="font-bold text-slate-900">Historial de Pagos</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50 text-left text-slate-500">
-                <th className="px-6 py-3 font-medium">Fecha</th>
-                <th className="px-6 py-3 font-medium">Concepto</th>
-                <th className="px-6 py-3 font-medium">Monto</th>
-                <th className="px-6 py-3 font-medium">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paymentHistory.map((payment) => (
-                <tr
-                  key={`${payment.date}-${payment.concept}`}
-                  className="border-t border-slate-100"
-                >
-                  <td className="px-6 py-4 text-slate-600">{payment.date}</td>
-                  <td className="px-6 py-4 text-slate-600">
-                    {payment.concept}
-                  </td>
-                  <td className="px-6 py-4 text-slate-900 font-medium">
-                    {payment.amount}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-medium">
-                      {payment.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function SupportView() {
-  return (
-    <>
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-xl font-bold text-slate-900">
-          Centro de Ayuda y Tickets
-        </h2>
-        <button
-          type="button"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors cursor-pointer"
-        >
-          Crear nuevo ticket
-        </button>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50 text-left text-slate-500">
-                <th className="px-6 py-3 font-medium">ID Ticket</th>
-                <th className="px-6 py-3 font-medium">Asunto</th>
-                <th className="px-6 py-3 font-medium">Estado</th>
-                <th className="px-6 py-3 font-medium">Última actualización</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets.map((ticket) => (
-                <tr
-                  key={ticket.id}
-                  className="border-t border-slate-100"
-                >
-                  <td className="px-6 py-4 font-medium text-indigo-600">
-                    {ticket.id}
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">{ticket.subject}</td>
-                  <td className="px-6 py-4">
-                    <SupportBadge status={ticket.status} />
-                  </td>
-                  <td className="px-6 py-4 text-slate-500">{ticket.updated}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  )
-}
-
 function ClientDashboard() {
   const [activeTab, setActiveTab] = useState('servicio')
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
@@ -893,6 +731,7 @@ function ClientDashboard() {
   const [authStep, setAuthStep] = useState(1)
   const [activeModules, setActiveModules] = useState([]) // Arreglo vacío, sin módulos por defecto
   const [menuItems, setMenuItems] = useState(initialMenuData)
+  const [tickets, setTickets] = useState(initialTickets)
 
   const addNotification = (title, message) => {
     const newNotif = {
@@ -987,7 +826,13 @@ function ClientDashboard() {
             />
           )}
           {activeTab === 'pagos' && <PaymentsView />}
-          {activeTab === 'soporte' && <SupportView />}
+          {activeTab === 'soporte' && (
+            <SupportView
+              tickets={tickets}
+              setTickets={setTickets}
+              onNotify={addNotification}
+            />
+          )}
           {activeTab === 'modulos' && (
             <ModulesView
               activeModules={activeModules}
