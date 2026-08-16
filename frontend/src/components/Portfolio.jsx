@@ -1,85 +1,100 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
 const demos = [
   {
-    image:
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    alt: 'Interior de restaurante',
+    id: 1,
     title: 'Sentimiento Peruano',
-    subtitle: 'Restaurante de comida criolla',
+    category: 'Restaurante de comida criolla',
+    // Imagen representativa de comida contundente / criolla
+    image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80',
     tags: ['Reservas', 'Carta QR'],
-    url: '/demo/criolla',
+    link: '/demo/criolla'
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    alt: 'Cupcakes y postres finos',
+    id: 2,
     title: 'Tu postre a la limeña',
-    subtitle: 'Repostería artesanal',
+    category: 'Repostería artesanal',
+    // Imagen de postres más elaborados/tradicionales
+    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80',
     tags: ['Catálogo', 'Pedidos'],
-    url: '/demo/postres',
+    link: '/demo/postres'
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    alt: 'Cafetería y barista',
+    id: 3,
     title: 'Café Express',
-    subtitle: 'Cafetería y desayunos',
+    category: 'Cafetería y desayunos',
+    // Imagen de un café de especialidad / brunch
+    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80',
     tags: ['Menú Digital', 'Delivery'],
-    url: '/demo/cafe',
-  },
-]
+    link: '/demo/cafe'
+  }
+];
 
-function Portfolio() {
+export default function Portfolio() {
   return (
-    <section id="demos" className="bg-white py-24">
+    <section id="demos" className="py-24 bg-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-3xl md:text-4xl font-bold text-slate-900 mb-12">
-          Sitios web que abren el apetito
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        {/* Encabezado de la sección */}
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4">
+            Sitios web que abren el apetito
+          </h2>
+          <p className="text-lg text-slate-500">
+            Explora nuestras plantillas optimizadas para conversión. Haz clic en cualquiera de ellas para interactuar con una demostración en vivo.
+          </p>
+        </div>
+
+        {/* Cuadrícula del Portafolio */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {demos.map((demo) => (
-            <a
-              key={demo.title}
-              href={demo.url}
-              className="block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden group cursor-pointer flex flex-col"
+            <Link
+              key={demo.id}
+              to={demo.link}
+              className="group block bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col"
             >
-              <div className="relative overflow-hidden">
+              {/* Contenedor de la Imagen con Overlay */}
+              <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
                 <img
                   src={demo.image}
-                  alt={demo.alt}
-                  className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                  alt={`Demo de ${demo.title}`}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Overlay de llamada a la acción (Aparece al hacer hover) */}
-                <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                  <span className="bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    Ver demo
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
+                {/* Overlay oscuro al hacer hover */}
+                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                  <span className="px-6 py-3 bg-white text-slate-900 font-bold rounded-xl transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                    Ver Sitio Web
                   </span>
                 </div>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-bold text-xl text-slate-900 mb-1">
+
+              {/* Contenido de la Tarjeta */}
+              <div className="p-6 md:p-8 flex-1 flex flex-col">
+                <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors">
                   {demo.title}
                 </h3>
-                <p className="text-sm text-slate-500 mb-4">{demo.subtitle}</p>
-                <div className="mt-auto flex gap-2">
-                  {demo.tags.map((tag) => (
+                <p className="text-slate-500 text-sm mb-6 flex-1">
+                  {demo.category}
+                </p>
+
+                {/* Etiquetas */}
+                <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-50">
+                  {demo.tags.map(tag => (
                     <span
                       key={tag}
-                      className="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                      className="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-md"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
+
       </div>
     </section>
-  )
+  );
 }
-
-export default Portfolio

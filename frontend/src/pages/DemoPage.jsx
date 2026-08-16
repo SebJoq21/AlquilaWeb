@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const demoData = {
@@ -56,6 +57,10 @@ export default function DemoPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const data = demoData[id] || demoData.cafe;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // 1. PLANTILLA: ELEGANTE (Restaurante Clásico - Modo Oscuro)
   const renderElegant = () => (
