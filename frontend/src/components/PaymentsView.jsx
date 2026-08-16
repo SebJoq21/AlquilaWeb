@@ -18,7 +18,7 @@ function NextPaymentCard() {
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
       <div className="flex justify-between items-start mb-2">
         <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-          Próximo pago automático
+          Próximo pago
         </span>
       </div>
       <h3 className="text-xl font-bold text-slate-900 mb-1">
