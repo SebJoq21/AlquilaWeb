@@ -2,7 +2,7 @@ import { CheckCircle2 } from 'lucide-react'
 
 function Pricing({ onRegister }) {
   return (
-    <section id="planes" className="bg-slate-50 py-24">
+    <section id="pricing" className="bg-slate-50 py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-3xl font-bold text-slate-900">
           Planes claros, sin sorpresas

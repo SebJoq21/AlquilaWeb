@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Portfolio from '../components/Portfolio'
 import HowItWorks from '../components/HowItWorks'
+import Testimonials from '../components/Testimonials'
 import Pricing from '../components/Pricing'
 import Footer from '../components/Footer'
 import AuthModal from '../components/AuthModal'
@@ -28,6 +29,7 @@ function Home() {
       <Hero />
       <Portfolio />
       <HowItWorks />
+      <Testimonials />
       <Pricing onRegister={() => setAuthModal('register')} />
       <Footer />
 

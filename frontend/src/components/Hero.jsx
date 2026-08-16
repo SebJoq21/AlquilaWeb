@@ -27,13 +27,13 @@ function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <a
-            href="#planes"
+            href="#pricing"
             className="bg-indigo-600 text-white rounded-full px-8 py-3 font-medium shadow-sm hover:bg-indigo-700 transition-all"
           >
             Ver planes
           </a>
           <a
-            href="#planes"
+            href="#pricing"
             className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm rounded-full px-8 py-3 font-medium transition-all"
           >
             Empezar ahora

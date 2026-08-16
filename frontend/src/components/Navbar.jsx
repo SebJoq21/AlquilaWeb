@@ -19,8 +19,9 @@ export default function Navbar({ onLogin, onRegister }) {
         <div className="hidden md:flex items-center gap-10">
           <a href="#inicio" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Inicio</a>
           <a href="#demos" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Demos</a>
-          <a href="#como-funciona" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Cómo funciona</a>
-          <a href="#planes" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Precios</a>
+          <a href="#how-it-works" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Cómo funciona</a>
+          <a href="#reviews" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Reseñas</a>
+          <a href="#pricing" className="text-base font-medium text-slate-600 hover:text-indigo-600 transition-colors">Precios</a>
         </div>
 
         {/* Derecha: Botones de Acción */}

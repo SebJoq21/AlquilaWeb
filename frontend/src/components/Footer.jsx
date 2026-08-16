@@ -27,8 +27,8 @@ export default function Footer() {
             <ul className="flex flex-col gap-4 text-sm text-slate-400">
               <li><a href="#inicio" className="hover:text-indigo-400 transition-colors">Inicio</a></li>
               <li><a href="#demos" className="hover:text-indigo-400 transition-colors">Ver Demos</a></li>
-              <li><a href="#como-funciona" className="hover:text-indigo-400 transition-colors">Cómo funciona</a></li>
-              <li><a href="#planes" className="hover:text-indigo-400 transition-colors">Precios y Planes</a></li>
+              <li><a href="#how-it-works" className="hover:text-indigo-400 transition-colors">Cómo funciona</a></li>
+              <li><a href="#pricing" className="hover:text-indigo-400 transition-colors">Precios y Planes</a></li>
             </ul>
           </div>
 
