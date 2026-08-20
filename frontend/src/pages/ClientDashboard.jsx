@@ -295,7 +295,7 @@ function SecurityModal({
 
 function Sidebar({ activeTab, onTabChange, activeModules }) {
   const items = [
-    { id: 'servicio', label: 'Tu servicio', icon: Monitor },
+    { id: 'servicio', label: 'Tus servicios', icon: Monitor },
     { id: 'pagos', label: 'Pagos', icon: CreditCard },
   ]
 
