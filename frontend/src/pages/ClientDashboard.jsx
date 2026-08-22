@@ -6,6 +6,8 @@ import MenuEditor from '../components/MenuEditor'
 import SupportView from '../components/SupportView'
 import PaymentsView from '../components/PaymentsView'
 import SettingsView from '../components/SettingsView'
+import ServicesView from '../components/ServicesView'
+import ServiceOnboardingWizard from '../components/ServiceOnboardingWizard'
 import {
   CreditCard,
   Layers,
@@ -396,7 +398,8 @@ function TopBar({
   setHasUnread,
 }) {
   const titles = {
-    servicio: 'Resumen de tu servicio',
+    servicio: 'Mis Servicios',
+    'servicio-detalle': 'Resumen de tu servicio',
     pagos: 'Gestión de pagos',
     soporte: 'Soporte Técnico',
     modulos: 'Módulos y Mejoras',
@@ -567,9 +570,22 @@ function TopBar({
   )
 }
 
-function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
+function ServiceView({ service, activePlan, onChangePlan, onViewMenu, onBack }) {
+  const domain = service?.domain || 'www.mirestaurante.com'
+  const serviceName = service?.name || 'Tu restaurante'
+
   return (
     <>
+      {/* Barra de retorno al gestor de servicios */}
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+        Volver a Mis Servicios
+      </button>
+
       {/* Contenedor Superior: Dominio y Plan Separados pero Destacados */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
@@ -588,8 +604,9 @@ function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Activo
             </span>
           </div>
-          <a href="https://www.mirestaurante.com" target="_blank" rel="noreferrer" className="text-xl sm:text-2xl font-black text-slate-900 hover:text-indigo-600 transition-colors flex items-center gap-2 w-max">
-            www.mirestaurante.com
+          <p className="text-xs font-semibold text-slate-400 mb-1">{serviceName}</p>
+          <a href={`https://${domain}`} target="_blank" rel="noreferrer" className="text-xl sm:text-2xl font-black text-slate-900 hover:text-indigo-600 transition-colors flex items-center gap-2 w-max">
+            {domain}
             <svg className="w-5 h-5 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
           </a>
         </div>
@@ -750,6 +767,7 @@ function ServiceView({ activePlan, onChangePlan, onViewMenu }) {
 
 function ClientDashboard() {
   const [activeTab, setActiveTab] = useState('servicio')
+  const [activeView, setActiveView] = useState('LIST') // 'LIST' | 'WIZARD' (enrutamiento interno de la zona de contenido)
   const [isPlanModalOpen, setIsPlanModalOpen] = useState(false)
   const [activePlan, setActivePlan] = useState('profesional') // El plan real
   const [notifications, setNotifications] = useState([])
@@ -764,6 +782,7 @@ function ClientDashboard() {
   const [paymentHistory, setPaymentHistory] = useState([
     { id: 1, date: '01 Ago 2026', concept: 'Plan Profesional - Mensualidad', amount: '$70.00', status: 'Pagado', type: 'plan', day: 1 },
   ])
+  const [selectedService, setSelectedService] = useState(null)
 
   const addNotification = (title, message) => {
     const newNotif = {
@@ -864,11 +883,28 @@ function ClientDashboard() {
           setHasUnread={setHasUnread}
         />
         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
-          {activeTab === 'servicio' && (
+          {activeTab === 'servicio' && activeView === 'LIST' && (
+            <ServicesView
+              onAddNewService={() => setActiveView('WIZARD')}
+              onManageService={(service) => {
+                setSelectedService(service)
+                setActiveTab('servicio-detalle')
+              }}
+            />
+          )}
+          {activeTab === 'servicio' && activeView === 'WIZARD' && (
+            <ServiceOnboardingWizard
+              onCancel={() => setActiveView('LIST')}
+              onComplete={() => setActiveView('LIST')}
+            />
+          )}
+          {activeTab === 'servicio-detalle' && selectedService && (
             <ServiceView
+              service={selectedService}
               activePlan={activePlan}
               onChangePlan={() => setIsPlanModalOpen(true)}
               onViewMenu={() => setActiveTab('ver-carta')}
+              onBack={() => setActiveTab('servicio')}
             />
           )}
           {activeTab === 'ver-carta' && (
